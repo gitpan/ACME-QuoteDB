@@ -1,5 +1,10 @@
 Revision history for ACME-QuoteDB
 
+0.1.1   Fri Sep 18 02:11:02 PDT 2009
+  bug fixes:
+  * default constructor values were not getting set on the object as they should
+  * loosen untaint filepath - for the dist test failures
+
 0.1.0   Wed Sep  9 23:43:56 PDT 2009
         Initial public pre-release (minor version)
 

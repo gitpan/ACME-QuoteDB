@@ -1,5 +1,5 @@
 package ACME::QuoteDB::LoadDB;
-#$Id: LoadDB.pm,v 1.27 2009/09/11 07:06:42 dinosau2 Exp $
+#$Id: LoadDB.pm,v 1.29 2009/09/18 08:54:16 dinosau2 Exp $
 # /* vim:et: set ts=4 sw=4 sts=4 tw=78: */
 
 use 5.008005;        # require perl 5.8.5, re: DBD::SQLite Unicode
@@ -8,7 +8,7 @@ use strict;
 
 #use criticism 'brutal'; # use critic with a ~/.perlcriticrc
 
-use version; our $VERSION = qv('0.1.0');
+use version; our $VERSION = qv('0.1.1');
 
 # with Text::CSV only use 'perl csv loader'
 # 'one time' db load performance not a concern
@@ -25,11 +25,15 @@ use Encode qw/is_utf8 decode/;
 use Data::Dumper qw/Dumper/;
 use Carp qw/carp croak/;
 use Text::CSV;
+use Readonly;
 use DBI;
 
 # if not in utf8 latin1 is assumed
 my $FILE_ENCODING = 'iso-8859-1';
 
+Readonly my @QUOTE_FIELDS => qw/quote name source catg rating/;
+
+# XXX refactor
 sub new {
     my ($class, $args) = @_;
 
@@ -37,7 +41,7 @@ sub new {
     my $self = bless {}, $class;
 
     # store each record we extract - keys map to database fields
-    # TODO 'proper' encapsulation
+    # TODO proper encapsulation
     $self->{record} = {};
     $self->{record}->{quote}  = q{};
     $self->{record}->{rating} = q{};
@@ -55,7 +59,22 @@ sub new {
     $self->{category}    = $args->{category};
     $self->{rating}      = $args->{rating};
     $self->{attr_source} = $args->{attr_source};
+    $self->{orig_args}   = $args;
     $self->{success}     = undef;
+
+    # start with if set
+    $self->{record}->{rating} = $self->{rating};
+    $self->{record}->{name}   = $self->{attr_source};
+    $self->{record}->{source} = $self->{attr_source};
+    if (ref $self->{category} eq 'ARRAY') {
+       $self->{record}->{catg} = ();
+       foreach my $c (@{$self->{category}}){
+         push @{$self->{record}->{catg}}, $c;
+       }
+    }
+    else {
+       $self->{record}->{catg} = $self->{category};
+    }
 
     # db connection info
     if ($ENV{ACME_QUOTEDB_DB}) {
@@ -75,27 +94,10 @@ sub new {
 sub set_record {
   my ($self, $field, $value) = @_;
 
-  if (not $value){
-      $self->{record}->{$field}  = q{};
-      #$self->{record}->{quote}  = q{};
-      #$self->{record}->{rating} = q{};
-      #$self->{record}->{name}   = q{};
-      #$self->{record}->{source} = q{};
-      #$self->{record}->{catg}   = q{};
-  }
   # TODO support mult-field simultanous loading
-  #elsif ($value and ref $field eq 'HASH') {
-  #   while (my ($k, $v) = each %{$field}){
-  #    $self->{record}->{$k} = $v;
-  #    #$self->{record}->{quote}  = q{};
-  #    #$self->{record}->{rating} = q{};
-  #    #$self->{record}->{name}   = q{};
-  #    #$self->{record}->{source} = q{};
-  #    #$self->{record}->{catg}   = q{};
-  #    }
-  #}
-  elsif ($value) {
-      $self->{record}->{$field} =  $value;
+
+  if ($value) {
+      $self->{record}->{$field} = $value;
   }
 
   return $self;
@@ -112,9 +114,7 @@ sub debug_record {
 sub get_record {
   my ($self, $field) = @_;
 
-  if (not $field){
-      return $self;
-  }
+  if (not $field){return $self}
 
   return $self->{record}->{$field};
 }
@@ -217,7 +217,7 @@ sub dbload_from_csv {
      sep_char => $delim,
      binary => 1
   });
-  $csv->column_names (qw(quote name source catg rating));
+  $csv->column_names (@QUOTE_FIELDS);
 
   open my $source, '<:encoding(utf8)', $file || croak $!;
 
@@ -260,8 +260,7 @@ sub _to_utf8 {
     my ($self) = @_;
 
     RECORD:
-    foreach my $r (%{$self->{record}}){
-        next RECORD unless $r;
+    foreach my $r (@QUOTE_FIELDS){
         my $val = $self->{record}->{$r};
         if (ref $val eq 'ARRAY'){
          foreach my $v (@{$val}){
@@ -385,12 +384,32 @@ sub write_record {
     # TODO add a test for failure
     if ($self->{write_db} and not $attr_id) {croak 'db write not successful'}
 
-    $self->{record} = {};
     #$self->set_record(undef);
+    $self->{record} = {};
+    $self->_reset_orig_args;
 
-    if ($self->{write_db}) {$self->success(1)}
+    if ($self->{write_db}) {
+        $self->success(1);
+    }
 
     return $self->success;
+}
+
+sub _reset_orig_args {
+  my ($self) = @_;
+
+  $self->{record}->{rating} = $self->{orig_args}->{rating};
+  $self->{record}->{name}   = $self->{orig_args}->{attr_source};
+  $self->{record}->{source} = $self->{orig_args}->{attr_source};
+  if (ref $self->{orig_args}->{category} eq 'ARRAY') {
+     foreach my $c (@{$self->{orig_args}->{category}}){
+       push @{$self->{record}->{catg}}, $c;
+     }
+  } 
+  else {
+    $self->{record}->{catg} = $self->{orig_args}->{category};
+  }
+
 }
 
 sub success {
@@ -405,10 +424,11 @@ sub _display_vals_if_verbose {
     my ($self) = @_;
 
     if ($self->{verbose}){
-        print 'Quote: ',   $self->get_record('quote'),"\n";
-        print 'Source: ',  $self->get_record('source'),"\n";
-        print 'Category: ',$self->get_record('catg'),"\n";
-        print 'Rating: ',  $self->get_record('rating'),"\n";
+        #print 'Quote: ',   $self->get_record('quote'),"\n";
+        #print 'Source: ',  $self->get_record('source'),"\n";
+        #print 'Category: ',$self->get_record('catg'),"\n";
+        #print 'Rating: ',  $self->get_record('rating'),"\n";
+        print Dumper $self->{record};
     }
 
     return $self;
@@ -602,7 +622,7 @@ ACME::QuoteDB::LoadDB - Database loader for ACME::QuoteDB
 
 =head1 VERSION
 
-Version 0.1.0
+Version 0.1.1
 
 =head1 SYNOPSIS
 

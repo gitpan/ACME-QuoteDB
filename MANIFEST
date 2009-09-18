@@ -29,3 +29,5 @@ t/data/www.amk.ca/quotations/python-quotes/index.html
 t/data/www.amk.ca/quotations/python-quotes/page-10.html
 t/data/www.amk.ca/quotations/python-quotes/page-2.html
 t/data/www.amk.ca/quotations/python-quotes/page-3.html
+Makefile.PL
+META.yml

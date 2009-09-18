@@ -1,5 +1,5 @@
 package ACME::QuoteDB;
-#$Id: QuoteDB.pm,v 1.33 2009/09/11 07:06:42 dinosau2 Exp $
+#$Id: QuoteDB.pm,v 1.34 2009/09/18 08:54:16 dinosau2 Exp $
 # /* vim:et: set ts=4 sw=4 sts=4 tw=78: */
 
 use 5.008005;        # require perl 5.8.5, re: DBD::SQLite Unicode
@@ -7,7 +7,7 @@ use warnings;
 use strict;
 
 #major-version.minor-revision.bugfix
-use version; our $VERSION = qv('0.1.0');
+use version; our $VERSION = qv('0.1.1');
 
 #use criticism 'brutal'; # use critic with a ~/.perlcriticrc
 
@@ -553,7 +553,7 @@ ACME::QuoteDB - API implements CRUD for a Collection of Quotes (adages/proverbs/
 
 =head1 VERSION
 
-Version 0.1.0
+Version 0.1.1
 
 
 =head1 SYNOPSIS

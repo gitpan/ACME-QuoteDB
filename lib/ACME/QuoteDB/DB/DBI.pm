@@ -1,4 +1,4 @@
-﻿#$Id: DBI.pm,v 1.15 2009/09/12 06:23:43 dinosau2 Exp $
+﻿#$Id: DBI.pm,v 1.17 2009/09/18 08:54:16 dinosau2 Exp $
 # /* vim:et: set ts=4 sw=4 sts=4 tw=78: */
 
 package ACME::QuoteDB::DB::DBI;
@@ -11,7 +11,7 @@ use strict;
 
 #use criticism 'brutal'; # use critic with a ~/.perlcriticrc
 
-use version; our $VERSION = qv('0.1.0');
+use version; our $VERSION = qv('0.1.1');
 
 use Readonly;
 use File::Basename qw/dirname/;
@@ -75,7 +75,7 @@ sub get_current_db_path {
 sub _untaint_db_path {
     my $sane_path = abs_path(dirname(__FILE__));
     # appease taint mode, what a dir path looks like,... (probably not)
-    $sane_path =~ m{([a-zA-Z0-9-_:\/\\\s]+)}; #add ':' for win32
+    $sane_path =~ m{([a-zA-Z0-9-_\.:\/\\\s]+)}; #add '.', ':' for win32
     return $1 || croak 'cannot untaint db path';
 }
 
@@ -90,7 +90,7 @@ ACME::QuoteDB::DB::DBI - DBI For ACME::QuoteDB
 
 =head1 VERSION
 
-Version 0.1.0
+Version 0.1.1
 
 
 =head1 SYNOPSIS
