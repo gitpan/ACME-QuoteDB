@@ -1,6 +1,7 @@
-package ACME::QuoteDB::LoadDB;
-#$Id: LoadDB.pm,v 1.29 2009/09/18 08:54:16 dinosau2 Exp $
+#$Id: LoadDB.pm,v 1.30 2009/09/30 07:37:09 dinosau2 Exp $
 # /* vim:et: set ts=4 sw=4 sts=4 tw=78: */
+
+package ACME::QuoteDB::LoadDB;
 
 use 5.008005;        # require perl 5.8.5, re: DBD::SQLite Unicode
 use warnings;

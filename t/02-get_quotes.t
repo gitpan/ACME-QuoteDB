@@ -19,7 +19,17 @@ BEGIN {
     $@ and croak 'DBD::SQLite is a required dependancy';
 }
 
+#make test db writeable
+sub make_test_db_rw {
+     use ACME::QuoteDB::DB::DBI;
+     # yeah, this is supposed to be covered by the build process
+     # but is failing sometimes,...
+     chmod 0666, ACME::QuoteDB::DB::DBI->get_current_db_path;
+}
+
 {
+    make_test_db_rw;
+
     my $q = File::Spec->catfile((dirname(__FILE__),'data'), 'simpsons_quotes.csv');
     my $load_db = ACME::QuoteDB::LoadDB->new({
                                 file        => $q,

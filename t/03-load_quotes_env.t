@@ -25,7 +25,7 @@ use DBI;
 use ACME::QuoteDB;
 use ACME::QuoteDB::LoadDB;
 
-{
+{ # prove it's not using the provided db path
   my $def_db = File::Spec->catfile( (dirname(__FILE__), '..', 'lib', 'ACME',
                             'QuoteDB', 'DB'), 'quotes.db'
                );
@@ -38,7 +38,7 @@ use ACME::QuoteDB::LoadDB;
 }
 
 ok -z $ENV{ACME_QUOTEDB_PATH};
-
+ 
 {
   my $q = File::Spec->catfile((dirname(__FILE__),'data'), 
       'simpsons_quotes.tsv.csv'

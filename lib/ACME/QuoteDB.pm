@@ -1,13 +1,14 @@
-package ACME::QuoteDB;
-#$Id: QuoteDB.pm,v 1.34 2009/09/18 08:54:16 dinosau2 Exp $
+#$Id: QuoteDB.pm,v 1.36 2009/09/30 07:37:09 dinosau2 Exp $
 # /* vim:et: set ts=4 sw=4 sts=4 tw=78: */
+
+package ACME::QuoteDB;
 
 use 5.008005;        # require perl 5.8.5, re: DBD::SQLite Unicode
 use warnings;
 use strict;
 
 #major-version.minor-revision.bugfix
-use version; our $VERSION = qv('0.1.1');
+use version; our $VERSION = qv('0.1.2');
 
 #use criticism 'brutal'; # use critic with a ~/.perlcriticrc
 
@@ -553,7 +554,7 @@ ACME::QuoteDB - API implements CRUD for a Collection of Quotes (adages/proverbs/
 
 =head1 VERSION
 
-Version 0.1.1
+Version 0.1.2
 
 
 =head1 SYNOPSIS
@@ -1423,23 +1424,6 @@ this module was created with module-starter
 
 module-starter --module=ACME::QuoteDB \
         --author="David Wright" --mb --email=david_v_wright@yahoo.com
-
-this release:
-
-tar -zcv \
-     --exclude CVS  \
-     --exclude ".DS*" \
-     --exclude .cvsignore \
-     --exclude "*.swp"  \
-     --exclude "tags"  \
-     --exclude "errata"  \
-     --exclude .vimprojects \
-     --exclude .project \
-     --exclude .settings \
-     --exclude "t/data/for*" \
-     --exclude "t/data/enw*" \
-     --exclude "t/data/wik*" \
-     -f ACME-QuoteDB-0.1.0.tar.gz ACME-QuoteDB
 
 =head1 ERRATA
 

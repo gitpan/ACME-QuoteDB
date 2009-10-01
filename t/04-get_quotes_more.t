@@ -30,6 +30,12 @@ Readonly my $FG_QUOTE => 'Lois: Peter, what did you promise me?' .
   
 
 {
+    #make test db writeable
+    use ACME::QuoteDB::DB::DBI;
+    # yeah, this is supposed to be covered by the build process
+    # but is failing sometimes,...
+    chmod 0666, ACME::QuoteDB::DB::DBI->get_current_db_path;
+
     my $q = File::Spec->catfile((dirname(__FILE__),'data'), 
         'simpsons_quotes.csv'
     );

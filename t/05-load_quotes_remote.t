@@ -18,10 +18,6 @@ use File::Temp;
 use File::Spec;
 
 BEGIN {
-    #eval { require DBD::mysql };
-    #if ($@) {plan skip_all => 'DBD::mysql is a required dependancy'}
-
-    # XXX change to skip not croak
     eval "use DBI";
     $@ and plan skip_all => 'DBI/mysql is required for this test';
 

@@ -1,4 +1,4 @@
-﻿#$Id: DBI.pm,v 1.17 2009/09/18 08:54:16 dinosau2 Exp $
+﻿#$Id: DBI.pm,v 1.19 2009/09/30 07:37:09 dinosau2 Exp $
 # /* vim:et: set ts=4 sw=4 sts=4 tw=78: */
 
 package ACME::QuoteDB::DB::DBI;
@@ -11,7 +11,7 @@ use strict;
 
 #use criticism 'brutal'; # use critic with a ~/.perlcriticrc
 
-use version; our $VERSION = qv('0.1.1');
+use version; our $VERSION = qv('0.1.2');
 
 use Readonly;
 use File::Basename qw/dirname/;
@@ -21,7 +21,7 @@ use File::Spec;
 
 Readonly my $QUOTES_DATABASE => $ENV{ACME_QUOTEDB_PATH}
                                   || File::Spec->catfile(_untaint_db_path(),
-                                                         q(quotes.db)
+                                                   q(quotedb), q(quotes.db)
                                      );
 
 # set this to use a remote database
@@ -58,13 +58,17 @@ else {
                {
                    RaiseError => 1,
                    unicode    => 1,
-                   # pragma's may not work here,..(probably isnt' smart anyway)
+                   # func/pragma's may not work here,..(probably isnt' smart anyway)
                    #count_changes  => 0,
                    #temp_store     => 2,
                    #synchronous    => 'OFF',
+                   #busy_timeout => 3600000
                }
            )
       || croak "$QUOTES_DATABASE does not exist, or cant be created $!";
+
+      # how to enable this function?
+      #ACME::QuoteDB::DB::DBI->set_sql(func( 3600000, 'busy_timeout' ); 
 }
 
 
@@ -90,7 +94,7 @@ ACME::QuoteDB::DB::DBI - DBI For ACME::QuoteDB
 
 =head1 VERSION
 
-Version 0.1.1
+Version 0.1.2
 
 
 =head1 SYNOPSIS

@@ -1,7 +1,8 @@
-﻿package ACME::QuoteDB::DB::Attribution;
-use base 'ACME::QuoteDB::DB::DBI';
-#$Id: Attribution.pm,v 1.11 2009/09/09 06:08:51 dinosau2 Exp $
+﻿#$Id: Attribution.pm,v 1.12 2009/09/30 07:37:09 dinosau2 Exp $
 # /* vim:et: set ts=4 sw=4 sts=4 tw=78: */
+
+package ACME::QuoteDB::DB::Attribution;
+use base 'ACME::QuoteDB::DB::DBI';
 
 use 5.008005;        # require perl 5.8.5, re: DBD::SQLite Unicode
 use warnings;
